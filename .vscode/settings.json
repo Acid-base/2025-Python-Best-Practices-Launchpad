@@ -1,0 +1,13 @@
+{
+    "python.analysis.typeCheckingMode": "basic",
+    "python.linting.enabled": true,
+    "python.linting.ruffEnabled": true,
+    "python.formatting.provider": "none",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "ruff.importStrategy": "fromEnvironment",
+    "ruff.organizeImports": true,
+    "ruff.fixAll": true,
+    "ruff.showSyntaxErrors": true,
+    "ruff.configurationPreference": "filesystemFirst"
+}
