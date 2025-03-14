@@ -77,7 +77,7 @@ def add(a: int, b: int) -> int:
         The sum of the two integers.
 
     Raises:
-       TypeError: If a or b is not an
+       TypeError: If a or b is not an integer.
     """
     if not isinstance(a, int):
         raise TypeError("a must be an int")

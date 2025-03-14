@@ -1,5 +1,10 @@
 # Modern Python Project Template
 
+[![CI](https://github.com/yourusername/2024-Python-Best-Practices-Launchpad/actions/workflows/main.yml/badge.svg)](https://github.com/yourusername/2024-Python-Best-Practices-Launchpad/actions/workflows/main.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 This repository provides a modern Python project template, designed for efficient development with `uv`, `ruff`, `mypy`, `pytest`, and Git hooks powered by `pre-commit`. It aims to provide a solid foundation for new Python projects, promoting code quality, consistency, and reduced errors. This template is designed to be used with Linuxbrew for consistent package management across platforms.
 
 ## Features
@@ -12,12 +17,56 @@ This repository provides a modern Python project template, designed for efficien
 *   **`pyproject.toml` for Configuration:** Centralized project configuration using the official `pyproject.toml` standard.
 *   **Clean Project Structure:** A well-defined structure with separate `src` and `tests` directories.
 *   **Cross-Platform Compatibility:** Designed for use with Linuxbrew to provide a consistent development environment across Windows (via WSL), macOS, and Linux.
+*   **Dev Container Support:** Included configuration for instant development in a containerized environment with VS Code or GitHub Codespaces.
+
+## Project Structure
+
+```
+my_package/
+├── .github/                # GitHub workflows for CI/CD
+│   └── workflows/
+│       ├── main.yml        # Main CI workflow
+│       └── release.yml     # Release workflow for PyPI publishing
+├── .vscode/                # VS Code configuration
+│   └── settings.json       # Editor settings for Python development
+├── src/                    # Source code directory
+│   └── my_package/         # Main package directory
+│       ├── __init__.py     # Package initialization
+│       └── module.py       # Example module
+├── tests/                  # Test directory
+│   ├── test_module.py      # Unit tests
+│   └── integration_test.py # Integration tests
+├── .gitignore              # Specifies intentionally untracked files to ignore
+├── .pre-commit-config.yaml # Pre-commit hooks configuration
+├── LICENSE                 # MIT License
+├── pyproject.toml          # Project configuration and dependencies
+├── pytest.ini              # Pytest configuration
+├── README.md               # This file
+└── uv.lock                 # Dependency lock file
+```
 
 ## Getting Started
 
-Follow these steps to set up this project template for development:
+You can choose one of two approaches to set up this project template:
 
-### 1. Platform Specific Initialization
+### Option 1: Using Dev Containers (Recommended)
+
+If you have [VS Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) or [GitHub Codespaces](https://github.com/features/codespaces), you can get started quickly without any local setup:
+
+1. **VS Code + Dev Containers:**
+   - Clone this repository
+   - Open the repository folder in VS Code
+   - When prompted "Reopen in Container", click "Reopen in Container"
+   - (Alternatively, press F1, type "Reopen in Container" and select the option)
+
+2. **GitHub Codespaces:**
+   - Click the "Code" button on the GitHub repository
+   - Select the "Codespaces" tab
+   - Click "Create codespace on main"
+
+The container includes all necessary tools and dependencies, properly configured and ready to use.
+
+### Option 2: Local Setup with Linuxbrew/Homebrew
 
 Before cloning the repository, make sure you have Linuxbrew installed (or Homebrew on macOS).
 
@@ -284,6 +333,88 @@ You can configure existing hooks as needed. For example if you want to exclude f
 -   id: ruff
     args: ["--fix", "--exclude", "path/to/exclude"]
 ```
+
+## Environment and Workspace Setup Tips
+
+### Using Different Python Versions
+- The template requires Python 3.10 or higher
+- If you have multiple Python versions installed:
+  - On Windows, use `py -3.10 -m venv .venv` to specify version
+  - On Unix, use `python3.10 -m venv .venv`
+  - With uv, specify Python version in pyproject.toml's `requires-python`
+
+### IDE Integration
+1. **VS Code**
+   - Install Python and Ruff extensions
+   - Use the command palette to select your Python interpreter
+   - Restart VS Code after installing pre-commit hooks
+   - Set "Files: Eol" to "\n" for consistent line endings
+
+2. **PyCharm**
+   - Enable "Ruff" under Languages & Frameworks > Python > Ruff
+   - Set "Editor > Code Style > Line separator" to Unix
+   - Configure pytest as default test runner
+
+### Virtual Environment Best Practices
+- Create one venv per project to avoid dependency conflicts
+- Don't commit the .venv directory (it's in .gitignore)
+- On Windows, if UV fails, fall back to `python -m venv`
+- Rebuild venv if you suspect dependency issues
+
+## Troubleshooting
+
+### Common Issues
+
+1. **"Command not found" errors after installing tools**
+   - Make sure your PATH includes the Linuxbrew/Homebrew bin directory
+   - Try restarting your terminal or running `source ~/.bashrc` (or equivalent for your shell)
+
+2. **UV-specific issues**
+   - If `uv sync` fails with "Default group 'dev' is not defined", check your pyproject.toml configuration
+   - When using UV as a Python module (e.g., in scripts), install it with `pip install uv`
+   - For Windows users, you may need to use the full path to Python when creating virtual environments: `python -m venv .venv`
+
+3. **Type checking errors with third-party libraries**
+   - Install type stubs for the library: `uv pip install types-libraryname`
+   - Add the library to mypy's ignore list in pyproject.toml if stubs aren't available
+   - If using pytest-mypy-plugins and getting errors, you can remove it from mypy configuration as it's optional
+
+4. **Pre-commit hook configuration**
+   - Run `pre-commit run --all-files` to see detailed error messages
+   - Fix the issues according to the error messages or update hook configurations
+   - Note that ruff-format may report as "failed" when it successfully formats files - this is expected behavior
+   - If ruff configuration issues occur, start with a minimal configuration and gradually add rules
+
+5. **Package installation and development mode**
+   - When installing in development mode with `-e`, ensure you're in the correct directory
+   - Virtual environment activation on Windows uses backslashes: `.venv\Scripts\activate`
+   - For coverage warnings about "No source for code", ensure your package is installed in development mode
+
+6. **Testing issues**
+   - For integration tests, ensure paths use forward slashes even on Windows (pytest preference)
+   - Coverage warnings about temporary files can be safely ignored during integration testing
+   - When tests modify files, use tempfile.TemporaryDirectory() to avoid affecting the actual project files
+
+### Development Tips
+
+1. **Efficient Testing Workflow**
+   - Run specific test files: `pytest tests/test_module.py -v`
+   - Run tests with coverage: `pytest --cov=src/my_package`
+   - Use `-v` flag for verbose output to see individual test results
+
+2. **Type Checking Best Practices**
+   - Add `-> None` return type annotation to test functions
+   - Use `# type: ignore` comments judiciously for intentional type violations in tests
+   - Consider running mypy separately from pre-commit for faster development iterations
+
+3. **Code Style and Formatting**
+   - Let ruff handle code formatting automatically via pre-commit
+   - Use single quotes for strings (configured in ruff settings)
+   - Keep line length to 100 characters (configured in ruff settings)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
