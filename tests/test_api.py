@@ -28,10 +28,10 @@ def test_process_valid_data() -> None:
         ],
         name="test_set"
     )
-    
+
     response = client.post("/process", json=test_data.model_dump())
     assert response.status_code == 200
-    
+
     result = ProcessedResult(**response.json())
     assert result.average == 2.0
     assert result.maximum == 3

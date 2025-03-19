@@ -31,7 +31,7 @@ async def process_data(data: DataList) -> ProcessedResult:
 
     # Extract values from DataItems
     values = [item.value for item in data.items]
-    
+
     try:
         processor = DataProcessor(values)
         return ProcessedResult(

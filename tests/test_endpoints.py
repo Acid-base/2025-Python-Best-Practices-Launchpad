@@ -32,10 +32,10 @@ def test_process_data_valid(client: TestClient) -> None:
         ],
         "name": "test_batch"
     }
-    
+
     response = client.post("/process", json=test_data)
     assert response.status_code == 200
-    
+
     result = response.json()
     assert result["average"] == 2.0
     assert result["maximum"] == 3
@@ -48,7 +48,7 @@ def test_process_data_empty(client: TestClient) -> None:
         "items": [],
         "name": "empty_batch"
     }
-    
+
     response = client.post("/process", json=test_data)
     assert response.status_code == 400
     assert "empty" in response.json()["detail"].lower()
@@ -62,7 +62,7 @@ def test_process_data_invalid_type(client: TestClient) -> None:
         ],
         "name": "invalid_batch"
     }
-    
+
     response = client.post("/process", json=test_data)
     assert response.status_code == 422  # Pydantic validation error
 
@@ -75,7 +75,7 @@ def test_process_data_missing_value(client: TestClient) -> None:
         ],
         "name": "invalid_batch"
     }
-    
+
     response = client.post("/process", json=test_data)
     assert response.status_code == 422  # Pydantic validation error
 
@@ -90,10 +90,10 @@ def test_process_data_large_numbers(client: TestClient) -> None:
         ],
         "name": "large_numbers"
     }
-    
+
     response = client.post("/process", json=test_data)
     assert response.status_code == 200
-    
+
     result = response.json()
     assert result["average"] == 2000000.0
     assert result["maximum"] == 3000000

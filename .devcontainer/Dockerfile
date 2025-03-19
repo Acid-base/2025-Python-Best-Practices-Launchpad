@@ -1,43 +1,40 @@
-# Use the official Python 3.10 image as the base image
-FROM python:3.10-slim-bullseye
+FROM python:3.10-slim
 
-# Set environment variables for non-interactive installations
-ENV DEBIAN_FRONTEND=noninteractive
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONFAULTHANDLER=1
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
+    curl \
+    build-essential \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Linuxbrew (or Homebrew) for consistent package management
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
-    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc && \
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install Python dependencies using Linuxbrew or pip
-RUN brew install python
+# Set working directory
+WORKDIR /workspaces/app
 
-# Set up working directory
-WORKDIR /workspace
+# Create a non-root user for development
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
 
-# Copy the project files into the container
-COPY . /workspace/
+# Switch to non-root user
+USER $USERNAME
 
-# Install `uv` (your dependency manager) using pip
-RUN pip install uv
+# Add user's .local/bin to path for uv
+ENV PATH="/home/$USERNAME/.local/bin:${PATH}"
 
-# Install project dependencies from the lock file
-RUN uv sync
-
-# Install pre-commit hooks
-RUN pip install pre-commit && pre-commit install
-
-RUN pip install mypy
-RUN pip install ruff
-# Expose port 8000 (you can customize this based on your needs)
-EXPOSE 8000
-
-# Set the default command to open a bash shell
-CMD ["bash"]
+# Install uv for the user
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh

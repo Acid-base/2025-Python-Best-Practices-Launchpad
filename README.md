@@ -1,53 +1,69 @@
-# Modern Python Project Template
+# Python Best Practices Launchpad
 
 [![CI](https://github.com/yourusername/2024-Python-Best-Practices-Launchpad/actions/workflows/main.yml/badge.svg)](https://github.com/yourusername/2024-Python-Best-Practices-Launchpad/actions/workflows/main.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository provides a modern Python project template, designed for efficient development with `uv`, `ruff`, `mypy`, `pytest`, and Git hooks powered by `pre-commit`. It aims to provide a solid foundation for new Python projects, promoting code quality, consistency, and reduced errors. This template is designed to be used with Linuxbrew for consistent package management across platforms.
+This repository provides a modern Python project template with a functional FastAPI REST API, designed for efficient development with `uv`, `ruff`, `mypy`, `pytest`, and Git hooks powered by `pre-commit`. It demonstrates best practices for building production-ready Python applications with robust testing, containerization, and CI/CD integration.
 
 ## Features
 
+*   **REST API with FastAPI:** Ready-to-use API with data validation using Pydantic models.
+*   **Docker & Docker Compose:** Production-ready containerization with multi-stage builds.
 *   **`uv` for Dependency Management:** Fast and efficient dependency resolution and virtual environment management.
 *   **`ruff` for Linting and Formatting:** Enforces consistent code style, catches errors early, and provides auto-fixing capabilities.
 *   **`mypy` for Type Checking:** Adds static typing to your Python code, preventing type-related errors.
-*   **`pytest` for Testing:** Provides a robust and flexible testing framework.
+*   **`pytest` for Testing:** Comprehensive test suite with unit, API, and integration tests.
 *   **`pre-commit` for Git Hooks:** Automates code quality checks before every commit.
-*   **`pyproject.toml` for Configuration:** Centralized project configuration using the official `pyproject.toml` standard.
-*   **Clean Project Structure:** A well-defined structure with separate `src` and `tests` directories.
-*   **Cross-Platform Compatibility:** Designed for use with Linuxbrew to provide a consistent development environment across Windows (via WSL), macOS, and Linux.
-*   **Dev Container Support:** Included configuration for instant development in a containerized environment with VS Code or GitHub Codespaces.
+*   **GitHub Actions Workflow:** Ready-to-use CI pipeline for testing and quality assurance.
+*   **Dev Container Support:** Included configuration for instant development in VS Code or GitHub Codespaces.
 
 ## Project Structure
 
 ```
-my_package/
-├── .github/                # GitHub workflows for CI/CD
-│   └── workflows/
-│       ├── main.yml        # Main CI workflow
-│       └── release.yml     # Release workflow for PyPI publishing
-├── .vscode/                # VS Code configuration
-│   └── settings.json       # Editor settings for Python development
-├── src/                    # Source code directory
-│   └── my_package/         # Main package directory
-│       ├── __init__.py     # Package initialization
-│       └── module.py       # Example module
-├── tests/                  # Test directory
-│   ├── test_module.py      # Unit tests
-│   └── integration_test.py # Integration tests
-├── .gitignore              # Specifies intentionally untracked files to ignore
-├── .pre-commit-config.yaml # Pre-commit hooks configuration
-├── LICENSE                 # MIT License
-├── pyproject.toml          # Project configuration and dependencies
-├── pytest.ini              # Pytest configuration
-├── README.md               # This file
-└── uv.lock                 # Dependency lock file
+2024-Python-Best-Practices-Launchpad/
+├── .github/workflows/       # GitHub workflows for CI/CD
+│   └── main.yml             # Main CI workflow
+├── .devcontainer/           # Dev Container configuration
+│   ├── devcontainer.json    # Dev container settings
+│   └── Dockerfile           # Dev container image definition
+├── src/                     # Source code directory
+│   └── my_package/          # Main package directory
+│       ├── __init__.py      # Package initialization
+│       ├── api.py           # FastAPI implementation
+│       ├── models.py        # Pydantic data models
+│       ├── module.py        # Core functionality
+│       ├── example.py       # Example calculator class
+│       └── run.py           # Script to run the FastAPI server
+├── tests/                   # Test directory
+│   ├── test_api.py          # Tests for FastAPI endpoints using models
+│   ├── test_endpoints.py    # Tests for API endpoints using test client
+│   ├── test_module.py       # Tests for core functionality
+│   ├── test_example.py      # Tests for example calculator
+│   └── integration_test.py  # Integration tests
+├── .pre-commit-config.yaml  # Pre-commit hooks configuration
+├── docker-compose.yml       # Docker Compose configuration
+├── Dockerfile               # Multi-stage production Docker image
+├── LICENSE                  # MIT License
+├── pyproject.toml           # Project configuration and dependencies
+├── pytest.ini               # Pytest configuration
+└── README.md                # This file
 ```
+
+## API Features
+
+The included FastAPI application provides:
+
+* Data processing API with input validation
+* Proper error handling and status codes
+* CORS middleware for cross-origin requests
+* Automatic OpenAPI documentation (available at `/docs`)
+* Pydantic models for request/response schema validation
 
 ## Getting Started
 
-You can choose one of two approaches to set up this project template:
+You can choose one of two approaches to set up this project:
 
 ### Option 1: Using Dev Containers (Recommended)
 
@@ -66,7 +82,18 @@ If you have [VS Code](https://code.visualstudio.com/) with the [Dev Containers e
 
 The container includes all necessary tools and dependencies, properly configured and ready to use.
 
-### Option 2: Local Setup with Linuxbrew/Homebrew
+### Option 2: Using Docker Compose
+
+To run the API using Docker Compose:
+
+```bash
+# Build and start the container
+docker-compose up --build
+
+# API will be available at http://localhost:8000
+```
+
+### Option 3: Local Setup with Linuxbrew/Homebrew
 
 Before cloning the repository, make sure you have Linuxbrew installed (or Homebrew on macOS).
 
@@ -148,12 +175,50 @@ Once Linuxbrew (or Homebrew on macOS) and Python are installed, you can continue
 
 ## Development
 
-*   **Code in `src`:** Start adding your Python code inside the `src/my_package` directory.
-*  **Create tests:** Create your tests in the `tests` directory, and import your code using the name of the package, in this case `my_package`.
+*   **Run the API server:** Start the FastAPI server locally for development.
+    ```bash
+    python -m src.my_package.run
+    ```
+    or
+    ```bash
+    uvicorn my_package.api:app --reload
+    ```
+
+*   **Access API documentation:** Open your browser and navigate to:
+    - Swagger UI: http://localhost:8000/docs
+    - ReDoc: http://localhost:8000/redoc
+
 *   **Run tests:** Use `pytest` in the root folder to run tests.
-  ```bash
-  pytest
-  ```
+    ```bash
+    pytest
+    ```
+
+### API Endpoints
+
+* `GET /` - Root endpoint with API information
+* `POST /process` - Process a list of data items
+  - Accepts JSON with items array and optional name
+  - Returns average, maximum, and count of processed items
+
+## Docker Support
+
+The project includes production-ready Docker configuration:
+
+* Multi-stage build for smaller images
+* Non-root user for security
+* Proper environment variables
+* Health checks
+* Resource constraints
+
+To build and run with Docker:
+
+```bash
+# Build the image
+docker build -t python-best-practices .
+
+# Run the container
+docker run -p 8000:8000 python-best-practices
+```
 
 ## Automatic Linting and Formatting
 
@@ -411,6 +476,163 @@ You can configure existing hooks as needed. For example if you want to exclude f
    - Let ruff handle code formatting automatically via pre-commit
    - Use single quotes for strings (configured in ruff settings)
    - Keep line length to 100 characters (configured in ruff settings)
+
+## Publishing Your Package to PyPI
+
+Once your project is ready for distribution, you can publish it to the Python Package Index (PyPI) to make it available for installation via `pip` or `uv`. Here's a step-by-step guide to publishing your package:
+
+### Preparing Your Package for Publication
+
+1. **Ensure your `pyproject.toml` is properly configured:**
+   - Verify your project metadata (name, version, description, author, etc.)
+   - Check that all dependencies are correctly listed
+   - Make sure you have a clear and informative README.md
+
+2. **Create or update your package classifiers:**
+   Add appropriate classifiers to help users find your package:
+
+   ```toml
+   [project]
+   # ...existing metadata...
+   classifiers = [
+       "Development Status :: 4 - Beta",
+       "Intended Audience :: Developers",
+       "License :: OSI Approved :: MIT License",
+       "Programming Language :: Python :: 3",
+       "Programming Language :: Python :: 3.10",
+       "Programming Language :: Python :: 3.11",
+       "Topic :: Software Development :: Libraries",
+   ]
+   ```
+
+### Building Distribution Packages
+
+1. **Install build tools:**
+   ```bash
+   uv pip install build twine
+   ```
+
+2. **Build your package:**
+   ```bash
+   python -m build
+   ```
+
+   This creates both source distributions (`.tar.gz`) and wheel distributions (`.whl`) in the `dist/` directory.
+
+### Testing with TestPyPI
+
+Before publishing to the main PyPI repository, it's a good practice to test with TestPyPI:
+
+1. **Create a TestPyPI account:**
+   Register at [https://test.pypi.org/account/register/](https://test.pypi.org/account/register/)
+
+2. **Configure your credentials:**
+   Create or edit `~/.pypirc`:
+   ```
+   [distutils]
+   index-servers =
+       pypi
+       testpypi
+
+   [pypi]
+   username = __token__
+   password = pypi-AgEIcHlwaS5vcmc...  # Your PyPI API token
+
+   [testpypi]
+   repository = https://test.pypi.org/legacy/
+   username = __token__
+   password = pypi-AgEIcHlwaS5vcmc...  # Your TestPyPI API token
+   ```
+
+3. **Upload to TestPyPI:**
+   ```bash
+   python -m twine upload --repository testpypi dist/*
+   ```
+
+4. **Test installation from TestPyPI:**
+   ```bash
+   uv pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ your-package-name
+   ```
+
+### Publishing to PyPI
+
+Once you've verified everything works correctly with TestPyPI:
+
+1. **Create a PyPI account:**
+   Register at [https://pypi.org/account/register/](https://pypi.org/account/register/)
+
+2. **Generate an API token:**
+   - Go to https://pypi.org/manage/account/token/
+   - Create a token with the "Upload to PyPI" scope
+   - Save this token securely as it won't be shown again
+
+3. **Upload to PyPI:**
+   ```bash
+   python -m twine upload dist/*
+   ```
+   You'll be prompted for your username and password (or token).
+
+4. **Verify installation from PyPI:**
+   ```bash
+   uv pip install your-package-name
+   ```
+
+### Automating Publication with GitHub Actions
+
+You can automate the publication process using GitHub Actions. Here's a sample workflow:
+
+1. **Create a GitHub Actions workflow file** in `.github/workflows/publish.yml`:
+
+```yaml
+name: Publish to PyPI
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+    - name: Build and publish
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        python -m build
+        twine upload dist/*
+```
+
+2. **Add secrets in your GitHub repository:**
+   - Go to your repository settings
+   - Navigate to Secrets and variables > Actions
+   - Add `PYPI_USERNAME` (use `__token__`)
+   - Add `PYPI_PASSWORD` (your PyPI API token)
+
+With this workflow, a new package version will be automatically published whenever you create a new GitHub release.
+
+### Version Management
+
+Follow semantic versioning (MAJOR.MINOR.PATCH) for your releases:
+- MAJOR: Incompatible API changes
+- MINOR: New functionality in a backward-compatible manner
+- PATCH: Backward-compatible bug fixes
+
+Update your version in `pyproject.toml` before each release:
+```toml
+[project]
+name = "my_package"
+version = "0.2.0"  # Update this line
+```
 
 ## License
 
