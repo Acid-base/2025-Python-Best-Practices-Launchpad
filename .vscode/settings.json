@@ -3,6 +3,7 @@
     "python.linting.enabled": true,
     "python.linting.ruffEnabled": true,
     "python.formatting.provider": "none",
+    "ruff.enable": true,
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff",
     "ruff.importStrategy": "fromEnvironment",
@@ -37,5 +38,6 @@
         "**/.ruff_cache": true,
         "**/venv": true,
         "**/*.pyc": true
-    }
+    },
+    "remote.WSL.useShellEnvironment": true
 }
